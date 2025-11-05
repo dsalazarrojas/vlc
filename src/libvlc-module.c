@@ -1037,6 +1037,13 @@ static const char* const ppsz_restore_playback_desc[] = {
     "the documentation to learn how to build such chains. " \
     "Warning: this chain will be enabled for all streams." )
 
+#define STREAM_WIZARD_CONFIG_TEXT N_("Stream wizard configuration")
+#define STREAM_WIZARD_CONFIG_LONGTEXT N_( \
+    "Configure streaming using simplified parameters. "\
+    "Format: profile=<profile_name>,dest=<type>,addr=<address>,port=<port>," \
+    "path=<path>,transcode=<0|1>,local=<0|1>,sout_all=<0|1>. "\
+    "Example: profile='Video - H.264 + MP3 (MP4)',dest=http,addr=0.0.0.0,port=8080,path=/stream,transcode=1" )
+
 #define SOUT_ALL_TEXT N_("Enable streaming of all ES")
 #define SOUT_ALL_LONGTEXT N_( \
     "Stream all elementary streams (video, audio and subtitles)")
@@ -2049,6 +2056,8 @@ vlc_module_begin ()
     add_category_hint(N_("Stream output"), SOUT_CAT_LONGTEXT)
 
     add_string( "sout", NULL, SOUT_TEXT, SOUT_LONGTEXT )
+    add_string( "stream-wizard-config", NULL, STREAM_WIZARD_CONFIG_TEXT,
+                                STREAM_WIZARD_CONFIG_LONGTEXT )
     add_bool( "sout-display", false, SOUT_DISPLAY_TEXT,
                                 SOUT_DISPLAY_LONGTEXT )
     add_bool( "sout-keep", false, SOUT_KEEP_TEXT,

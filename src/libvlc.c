@@ -66,6 +66,7 @@
 #include "player/player.h"
 
 #include "libvlc.h"
+#include "stream_wizard_cli.h"
 
 #include <vlc_vlm.h>
 
@@ -262,6 +263,9 @@ int libvlc_InternalInit( libvlc_int_t *p_libvlc, int i_argc,
 
     /* System specific configuration */
     system_Configure( p_libvlc, i_argc - vlc_optind, ppsz_argv + vlc_optind );
+
+    /* Apply stream wizard configuration if present */
+    vlc_ApplyStreamWizardConfig( p_libvlc );
 
 #ifdef ENABLE_VLM
     /* Initialize VLM if vlm-conf is specified */

@@ -80,6 +80,8 @@ libvlccore_sources_base = files(
     'libvlc.c',
     'libvlc.h',
     'libvlc-module.c',
+    'stream_wizard_cli.c',
+    'stream_wizard_cli.h',
     'missing.c',
     'version.c',
     'config/cat.c',

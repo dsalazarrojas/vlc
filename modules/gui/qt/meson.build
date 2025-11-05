@@ -263,6 +263,8 @@ qt_plugin_sources = files(
     'dialogs/sout/sout.hpp',
     'dialogs/sout/sout_widgets.cpp',
     'dialogs/sout/sout_widgets.hpp',
+    'cli_stream_wrapper.cpp',
+    'cli_stream_wrapper.hpp',
     'dialogs/systray/systray.cpp',
     'dialogs/systray/systray.hpp',
     'dialogs/toolbar/controlbar_profile.hpp',
