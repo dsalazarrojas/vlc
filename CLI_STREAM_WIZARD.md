@@ -77,6 +77,20 @@ The following transcoding profiles are available (must be quoted if they contain
 - "Video for Youtube SD"
 - "Video for Youtube HD"
 
+#### Custom Profiles
+
+**The CLI also supports custom profiles!** If you've created and saved your own profiles in the VLC GUI (Media > Convert/Save > Edit Profile), you can use them by name:
+
+```bash
+vlc input.mp4 --stream-wizard-config="profile='My Custom Profile',dest=http,addr=0.0.0.0,port=8080,path=/stream,transcode=1"
+```
+
+Custom profiles are loaded from VLC's configuration file:
+- **Windows**: `%APPDATA%\vlc\vlc-qt-interface.ini` (section `[codecs-profiles]`)
+- **Linux/macOS**: `~/.config/vlc/vlc-qt-interface.conf` (section `[codecs-profiles]`)
+
+The profile name must match exactly (including case and spaces) as it appears in the GUI.
+
 ## Examples
 
 ### Example 1: Simple HTTP Streaming
@@ -147,6 +161,16 @@ Stream via SRT (Secure Reliable Transport):
 vlc input.mp4 --stream-wizard-config="profile='Video - H.264 + AAC (TS)',dest=srt,addr=127.0.0.1,port=7001,transcode=1"
 ```
 
+### Example 9: Using a Custom Profile
+
+Use your own custom profile that you created in the VLC GUI:
+
+```bash
+vlc input.mkv --stream-wizard-config="profile='My Custom H265 Profile',dest=http,addr=0.0.0.0,port=8080,path=/stream,transcode=1"
+```
+
+**Note**: The profile name must match exactly as it appears in your VLC Media > Convert/Save dialog.
+
 ## Technical Details
 
 ### Implementation
@@ -164,13 +188,18 @@ The wrapper reuses the exact same code paths as the GUI stream dialog, ensuring 
 1. VLC parses the `--stream-wizard-config` option during initialization
 2. The configuration string is parsed into a `CLIStreamParams` structure
 3. The C++ wrapper function `vlc_GenerateSoutStringFromCLI()` is called
-4. The wrapper builds a stream output chain using the same logic as `SoutDialog::updateChain()`
-5. The generated sout chain is set as the global `sout` variable
-6. VLC applies this chain to the media being played
+4. If a profile is specified, the wrapper:
+   - First searches for custom profiles in VLC's config file (`vlc-qt-interface.conf/ini`)
+   - Falls back to built-in profiles if not found
+5. The wrapper builds a stream output chain using the same logic as `SoutDialog::updateChain()`
+6. The generated sout chain is set as the global `sout` variable
+7. VLC applies this chain to the media being played
 
 ## Notes
 
 - Values containing spaces or special characters should be quoted (single or double quotes)
+- **Custom profiles are supported** - use the exact name as it appears in the GUI
+- Custom profiles are searched first, then built-in profiles
 - The generated sout chain can be seen in VLC's debug log (use `-vv` for verbose output)
 - This feature requires the Qt module to be compiled
 - Port numbers default to standard values if not specified:

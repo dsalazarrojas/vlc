@@ -27,6 +27,7 @@
 #include <QRegularExpression>
 #include <QUrl>
 #include <QHash>
+#include <QSettings>
 #include <cstring>
 #include <cstdlib>
 
@@ -212,6 +213,7 @@ static SoutChain buildTranscodeChain(const QString& profileValue, QString& outMu
 
 /**
  * Helper function to find profile value by name
+ * Searches custom profiles first, then falls back to built-in profiles
  */
 static QString findProfileValue(const char *profileName)
 {
@@ -220,7 +222,30 @@ static QString findProfileValue(const char *profileName)
 
     QString name(profileName);
 
-    /* Search in predefined profiles */
+    /* First, search in custom profiles from QSettings */
+    QSettings settings(
+#ifdef _WIN32
+        QSettings::IniFormat,
+#else
+        QSettings::NativeFormat,
+#endif
+        QSettings::UserScope, "vlc", "vlc-qt-interface");
+
+    int i_size = settings.beginReadArray("codecs-profiles");
+    for (int i = 0; i < i_size; i++)
+    {
+        settings.setArrayIndex(i);
+        QString profileNameInSettings = settings.value("Profile-Name").toString();
+        if (!profileNameInSettings.isEmpty() && profileNameInSettings == name)
+        {
+            QString value = settings.value("Profile-Value").toString();
+            settings.endArray();
+            return value;
+        }
+    }
+    settings.endArray();
+
+    /* Fall back to predefined profiles */
     for (size_t i = 0; i < NB_PROFILE; i++)
     {
         if (name == video_profile_name_list[i])
